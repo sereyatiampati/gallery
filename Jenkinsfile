@@ -5,6 +5,7 @@ pipeline {
       steps { 
         git 'https://github.com/sereyatiampati/gallery'
       }
+      
     }
   }
 }
