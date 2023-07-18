@@ -1,11 +1,44 @@
-pipeline { 
-  agent any
-  stages { 
-    stage('clone repository') {
-      steps { 
-        git 'https://github.com/sereyatiampati/gallery'
-      }
-      
+pipeline {
+    agent any
+
+    tools {
+        // Install the Maven version configured as "M3" and add it to the path.
+        nodejs "nodejs"
     }
-  }
+
+    stages {
+    stage('Checkout') {
+            steps {
+                // Install Node.js and npm (if not already installed)
+                // You can also use a specific Node.js version if you configured it in Jenkins.
+                // Install the project dependencies using npm or yarn.
+                git "https://github.com/sereyatiampati/gallery"
+            }
+        }
+     stage('Install Dependencies') {
+            steps {
+                // Install Node.js and npm (if not already installed)
+                // You can also use a specific Node.js version if you configured it in Jenkins.
+                // Install the project dependencies using npm or yarn.
+                sh 'npm install'
+            }
+        }
+    stage('Deploy to Render') {
+          steps {
+             withCredentials([usernameColonPassword(credentialsId: 'render', variable: 'RENDER_CREDENTIALS' )]){
+                   //   git push https://api.render.com/deploy/srv-ciqrl0tgkuvrtodr97ig?key=tMGf0zvYjew
+              sh '''
+          
+              curl -X POST https://api.render.com/deploy/srv-ciqrl0tgkuvrtodr97ig?key=tMGf0zvYjew
+              '''
+            }
+          }
+        }
+    stage('Tests') {
+      steps { 
+        sh 'npm test'
+      }
+    }
+
+    }
 }
