@@ -23,6 +23,22 @@ pipeline {
                 sh 'npm install'
             }
         }
+ stage('test'){
+            post{
+                failure{
+                    mail bcc: '', body: 'The npm test failed. Build status failed.', cc: '', from: '', replyTo: '', subject: 'Failed test', to: 'sereyatiampatistudies@gmail.com'
+                }
+                success{
+                mail bcc: '', body: 'The build and Test were successful. App deploying to Render. Expect a Slack notification once done.', cc: '', from: '', replyTo: '', subject: 'Build and Test success', to: 'sereyatiampatistudies@gmail.com'
+                }
+        
+            }
+            steps{
+               sh 'npm test'
+            }
+        }
+        
+
     stage('Deploy to Render') {
           steps {
              withCredentials([usernameColonPassword(credentialsId: 'render', variable: 'RENDER_CREDENTIALS' )]){
@@ -34,11 +50,6 @@ pipeline {
             }
           }
         }
-    stage('Tests') {
-      steps { 
-        sh 'npm test'
-      }
-    }
 
     }
 }
