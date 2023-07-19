@@ -37,8 +37,6 @@ pipeline {
                sh 'npm test'
             }
         }
-        
-
     stage('Deploy to Render') {
           steps {
              withCredentials([usernameColonPassword(credentialsId: 'render', variable: 'RENDER_CREDENTIALS' )]){
