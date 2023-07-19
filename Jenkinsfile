@@ -23,7 +23,7 @@ pipeline {
                 sh 'npm install'
             }
         }
- stage('test'){
+    stage('test'){
             post{
                 failure{
                     mail bcc: '', body: 'The npm test failed. Build status failed.', cc: '', from: '', replyTo: '', subject: 'Failed test', to: 'sereyatiampatistudies@gmail.com'
@@ -37,6 +37,8 @@ pipeline {
                sh 'npm test'
             }
         }
+        
+
     stage('Deploy to Render') {
           steps {
              withCredentials([usernameColonPassword(credentialsId: 'render', variable: 'RENDER_CREDENTIALS' )]){
@@ -48,6 +50,13 @@ pipeline {
             }
           }
         }
-
+    stage('Slack notification'){
+            steps{
+                slackSend channel: '#emillyip1', color: '#008000', message: "Deployment of ${BUILD_ID} to render successful. Click the link to view results. https://gallery-nnku.onrender.com/", tokenCredentialId: 'emillyip1'
+            }
+        }
+        
     }
+ 
 }
+
