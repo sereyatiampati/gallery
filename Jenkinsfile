@@ -1,5 +1,33 @@
 pipeline {
     agent any
+    environment {
+
+        EMAIL_BODY = 
+
+        """
+
+            <p>EXECUTED: Job <b>\'${env.JOB_NAME}:${env.BUILD_NUMBER})\'</b></p>
+
+            <p>
+
+            View console output at 
+
+            "<a href="${env.BUILD_URL}">${env.JOB_NAME}:${env.BUILD_NUMBER}</a>"
+
+            </p> 
+
+            <p><i>(Build log is attached.)</i></p>
+
+        """
+
+        EMAIL_SUBJECT_SUCCESS = "Status: 'SUCCESS' -Job \'${env.JOB_NAME}:${env.BUILD_NUMBER}\'" 
+
+        EMAIL_SUBJECT_FAILURE = "Status: 'FAILURE' -Job \'${env.JOB_NAME}:${env.BUILD_NUMBER}\'" 
+
+        EMAIL_RECEPIENT = 'sereyatiampatistudies@gmail.com'
+
+    }
+
 
     tools {
         // Install the Maven version configured as "M3" and add it to the path.
@@ -26,15 +54,15 @@ pipeline {
     stage('test'){
             post{
                 failure{
-                    mail bcc: '', body: 'The npm test failed. Build status failed.', cc: '', from: '', replyTo: '', subject: 'Failed test', to: 'sereyatiampatistudies@gmail.com'
+                    mail bcc: '', body: EMAIL_SUBJECT_FAILURE, cc: '', from: '', replyTo: '', subject: 'Failed test', to: EMAIL_RECEPIENT
                 }
                 success{
-                mail bcc: '', body: 'The build and Test were successful. App deploying to Render. Expect a Slack notification once done.', cc: '', from: '', replyTo: '', subject: 'Build and Test success', to: 'sereyatiampatistudies@gmail.com'
+                mail bcc: '', body: EMAIL_SUBJECT_SUCCESS, cc: '', from: '', replyTo: '', subject: 'Build and Test success', to: EMAIL_RECEPIENT
                 }
         
             }
             steps{
-               sh 'npm test'
+              sh 'npm test'
             }
         }
         
@@ -57,6 +85,26 @@ pipeline {
         }
         
     }
+    // post {
+    //     success {
+    //         emailext attachLog: true, 
+    //             body: EMAIL_BODY, 
+
+    //             subject: EMAIL_SUBJECT_SUCCESS,
+
+    //             to: EMAIL_RECEPIENT
+    //     }
+
+    //     failure {
+    //         emailext attachLog: true, 
+    //             body: EMAIL_BODY, 
+
+    //             subject: EMAIL_SUBJECT_FAILURE, 
+
+    //             to: EMAIL_RECEPIENT
+    //     }
+    // }
+
  
 }
 
